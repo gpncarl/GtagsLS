@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "gtagsls:lib"
+
+    - path: "./app/Main.hs"
+      component: "gtagsls:exe:gtagsls-exe"
+
+    - path: "./app/Paths_gtagsls.hs"
+      component: "gtagsls:exe:gtagsls-exe"
+
+    - path: "./test"
+      component: "gtagsls:test:gtagsls-test"
