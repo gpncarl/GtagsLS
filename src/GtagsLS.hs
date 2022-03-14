@@ -30,6 +30,10 @@ handlers :: Handlers (LspM ())
 --   ]
 handlers = mconcat
   [ requestHandler SInitialize $ \req responder -> do
+      env <- getLspEnv 
+      let RequestMessage _ _ _ (InitializeParams _ _ _ _ rootUri _ _ _ _) = req
+          rootPath = rootUri >>= uriToFilePath 
+      liftIO $ runLspT (env { resRootPath = rootPath }) (return ())
       responder $ Right $ InitializeResult
         { _capabilities = ServerCapabilities
             { -- | Defines how text documents are synced. Is either a detailed structure
@@ -104,9 +108,6 @@ handlers = mconcat
             }
             , _serverInfo = Nothing
         }
-      env <- getLspEnv 
-      let RequestMessage _ _ _ (InitializeParams _ _ _ rootPath rootUri _ _ _ _) = req
-      liftIO $ runLspT (env { resRootPath = T.unpack <$> rootPath }) (return ())
   , notificationHandler STextDocumentDidSave $ \notify -> do
       let NotificationMessage _ _ (DidSaveTextDocumentParams doc _) = notify
           TextDocumentIdentifier uri = doc
